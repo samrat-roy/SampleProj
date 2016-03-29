@@ -15,7 +15,7 @@ var customercontroller = function () {
         });   
     }
     var RegisterUser = function (req, res){
-        repository.RegisterUser(req, function (err) {
+        repository.RegisterUser(req, function (err,data) {
 
             if (err) {
                 res.setHeader("X-Error", err.message);
