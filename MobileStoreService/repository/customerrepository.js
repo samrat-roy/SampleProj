@@ -98,12 +98,19 @@ var customerrepositroy = function () {
                 return callback(new DatabaseConnectionError({ message: "Error connecting to Database" }), null);
             }
             instance = conn.model('Customer', CutomerData.Customer);
+            var instance = new instance();   
             instance.firstname = req.body.firstname;
             instance.lastname = req.body.lastname;
             instance.email = req.body.email;
             instance.mobile = req.body.mobile;
+            
             instance.save(function (err) {
-                callback(err);
+                if (err) {
+                    callback(err,null);
+                }
+                else {
+                    callback(null, "Customer added");
+                }
             });
         });
         //var instance = new CustomerModel();
