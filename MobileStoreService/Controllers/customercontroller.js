@@ -71,13 +71,29 @@ var customercontroller = function () {
             }
         });
     }
+    
+    var UpdateUserInformation = function (User, callback){
+        if (User == undefined) {
+            callback(new BadRequest({ message: "BadRequest" }), null);
+            return; 
+        }
+        repository.UpdateUserInformation(User, function (err, data) {
+            if (err) {
+                callback(err, null);
+            }
+            else {
+                callback(null, data);
+            }
+        });
+    }
        
     return {
         GetAllCustomer : GetAllCustomer,
         RegisterUser : RegisterUser,
         GetByName : GetByName,
         Searchuser : SearchUser,
-        GetByEmail : GetByEmail
+        GetByEmail : GetByEmail,
+        UpdateUserInformation : UpdateUserInformation
     }    
 }
 module.exports = customercontroller; 

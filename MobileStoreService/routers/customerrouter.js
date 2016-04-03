@@ -1,6 +1,7 @@
 ﻿var express = require('express');
 var authentication = require('../common/authentication')();
 var customerrouters = express.Router();
+var Customer = require('../Models/UserInfo');
 
 // Include the Customer Controller
 var customercontroller = require('../Controllers/customercontroller')();
@@ -75,8 +76,35 @@ customerrouters.post('/customer/register', function (req, res) {
 });
 
 // Update customer
-customerrouters.put('/customer/update', function (req, res) {
-    res.send('add called');
+customerrouters.put('/customer/update/:email', function (req, res) {
+    var authorization = req.headers.authorization;   
+    authentication.ValidateToken(authorization, function (err, data) {
+        if (err) {
+            res.status(500).send('Internal Server Error');
+        }
+        else {
+            if (data.Status == 200) {
+                Customer.mobile = req.body.mobile;
+                Customer.firstname = req.body.firstname;
+                Customer.lastname = req.body.lastname;
+                Customer.email = req.body.email;
+
+                customercontroller.UpdateUserInformation(Customer,function (err, data) {
+                    if (err) {
+                        res.setHeader("X-Error", err.message);
+                        res.status(err.status).send(err.message);
+                    }
+                    else {
+                        res.status(200).send(data);
+                    }
+                });
+            }
+            else {
+                res.status(401).send('UnAuthrize');
+            }
+        }
+    });
+    //res.send('add called');
 });
 
 // Delete customer

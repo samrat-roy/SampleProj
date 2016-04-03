@@ -98,7 +98,7 @@ var customerrepositroy = function () {
                 return callback(new DatabaseConnectionError({ message: "Error connecting to Database" }), null);
             }
             instance = conn.model('Customer', CutomerData.Customer);
-            var instance = new instance();   
+            var instance = new instance();
             instance.firstname = req.body.firstname;
             instance.lastname = req.body.lastname;
             instance.email = req.body.email;
@@ -106,7 +106,7 @@ var customerrepositroy = function () {
             
             instance.save(function (err) {
                 if (err) {
-                    callback(err,null);
+                    callback(err, null);
                 }
                 else {
                     callback(null, "Customer added");
@@ -122,6 +122,33 @@ var customerrepositroy = function () {
         //    callback(err);
         //});
     }
+    
+    var UpdateUserInformation = function (User, callback) {
+        var conn = mongoose.createConnection(mongodbconfig.connectionString() , mongodbconfig.options(), function (err) {
+            if (err) {
+                return callback(new DatabaseConnectionError({ message: "Error connecting to Database" }), null);
+            }
+            MyModel = conn.model('Customer', CutomerData.Customer);
+            var jsonData = {};
+            jsonData["email"] = User.email;
+            MyModel.findOne(jsonData, function (err, resultData) {
+                if (err) {
+                    return callback(new InternalServerError({ message: "Internal Server Error" }), null);
+                }
+                if (resultData.length == 0) {
+                    return callback(new NoRecordFound({ message: "No Record Found" }), null);
+                }
+                resultData.firstname = User.firstname;
+                resultData.lastname = User.lastname;
+                resultData.email = User.email;
+                resultData.mobile = User.mobile;
+                resultData.save();
+                callback(null, "Customer record updated");
+               
+            });
+        });
+    }
+    
     var SearchUser = function (req, callback) {
         var user_id = req.query.id;
         var firstname = req.query.firstname;
@@ -173,7 +200,8 @@ var customerrepositroy = function () {
         RegisterUser : RegisterUser,
         GetUserByName : GetUserByName,
         SearchUser : SearchUser,
-        GetUserByEmail : GetUserByEmail
+        GetUserByEmail : GetUserByEmail,
+        UpdateUserInformation : UpdateUserInformation
     }
 };
 module.exports = customerrepositroy;
